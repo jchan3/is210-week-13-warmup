@@ -17,7 +17,7 @@ GRADES = {
 
 def get_score_summary(filename):
     """Open and read a CSV file found on the local filesystem and return a
-        summarized version of the data in dictionary.
+        summarized version of the data in a dictionary.
 
     Args:
         filename(string): The filename whose data will be read and interpreted.
@@ -78,7 +78,7 @@ def get_score_summary(filename):
 
 def get_market_density(filename):
     """Open and read a JSON file found on the local filesystem and return a
-        summarized version of the data in dictionary.
+        summarized version of the data in a dictionary.
 
     Args:
         filename(string): The filename whose data will be read and interpreted.
@@ -110,3 +110,40 @@ def get_market_density(filename):
             greendict[boro_temp] = 1
 
     return greendict
+
+
+def correlate_data(rfile, jfile, outputfile):
+    """Open and read 2 files found on the local filesystem and return a
+        combined version of the data in a dictionary.
+
+    Args:
+        rfile(string): The name of a file with restaurant scores data.
+        jfile(string): The name of a JSON file with green market data.
+        outputfile(string): The name of a file that will contain the output of
+        this function.
+
+    Returns:
+        dictionary: A dictionary with the combined data.
+
+    Examples:
+
+        >>> correlate_data('inspection_results.csv','green_markets.json',
+        'combined.json')
+
+    """
+    combodict = {}
+    scoredict = get_score_summary(rfile)
+    marketdict = get_market_density(jfile)
+
+    for key, value in scoredict.iteritems():
+        boro_count = value[0]
+        boro_score = value[1]
+        market_count = marketdict[key]
+        density = float(market_count) / float(boro_count)
+        combodict[key] = (boro_score, density)
+
+    fhandler = open(outputfile, 'w')
+    json.dump(combodict, fhandler)
+    fhandler.close()
+
+    return combodict
