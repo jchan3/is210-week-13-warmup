@@ -3,6 +3,9 @@
 """Week 13 Warmup Task 01 module"""
 
 
+import json
+
+
 GRADES = {
     'A': 1.00,
     'B': .90,
@@ -13,7 +16,7 @@ GRADES = {
 
 
 def get_score_summary(filename):
-    """Open and read a CSV file found on the local filesystem and returns a
+    """Open and read a CSV file found on the local filesystem and return a
         summarized version of the data in dictionary.
 
     Args:
@@ -71,3 +74,39 @@ def get_score_summary(filename):
         newdict3[key] = (count, avg_score)
 
     return newdict3
+
+
+def get_market_density(filename):
+    """Open and read a JSON file found on the local filesystem and return a
+        summarized version of the data in dictionary.
+
+    Args:
+        filename(string): The filename whose data will be read and interpreted.
+
+    Returns:
+        dictionary: A dictionary with the count of green markets per borough.
+
+    Examples:
+
+        >>> get_market_density('green_markets.json')
+        {u'BRONX': 32, u'BROOKLYN': 48, u'STATEN ISLAND': 2, u'MANHATTAN': 39,
+        u'QUEENS': 16}
+
+    """
+    greendict = {}
+
+    fhandler = open(filename, 'r')
+    mydata = json.load(fhandler)
+    fhandler.close()
+
+    newdata = mydata['data']
+
+    for line in newdata:
+        boro_temp = line[8].upper().rstrip()
+        if greendict.get(boro_temp, None):
+            temp_count = greendict[boro_temp] + 1
+            greendict[boro_temp] = temp_count
+        else:
+            greendict[boro_temp] = 1
+
+    return greendict
